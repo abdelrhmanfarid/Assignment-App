@@ -19,6 +19,7 @@ import com.free.assignmentapplication.databinding.FragmentHomeBinding
 import com.free.assignmentapplication.ui.navigation.homeFragment.adapter.ProductsOfflineRecyclerAdapter
 import com.free.assignmentapplication.ui.navigation.homeFragment.adapter.ProductsRecyclerAdapter
 import com.free.assignmentapplication.ui.navigation.loginFragment.LoginFragmentDirections
+import com.free.assignmentapplication.ui.navigation.signupFragment.SignUpFragmentDirections
 import com.free.assignmentapplication.utils.LiveDataResource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -50,6 +51,11 @@ class HomeFragment : Fragment() {
             initProductsRecyclerInOfflineMode(products,binding.productsRecyclerView)
         })
 
+        binding.signOutButton.setOnClickListener {
+            homeViewModel.emptyToken()
+
+            findNavController().popBackStack()
+        }
 
 
     }

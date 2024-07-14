@@ -14,6 +14,9 @@ class LocalRepositoryImplementation @Inject constructor(
         prefManager.saveString(key,value)
     }
 
+    override fun returnString(key: String): String {
+        return prefManager.returnString(key)
+    }
 
 
 }

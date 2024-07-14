@@ -11,5 +11,8 @@ class PreferencesManager(private val sharedPreferences: SharedPreferences) {
         editor.putString(key, value).apply()
     }
 
+    fun returnString(key: String): String{
+        return sharedPreferences.getString(key , "").toString()
+    }
 
 }

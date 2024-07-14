@@ -1,8 +1,9 @@
 package com.free.assignmentapplication.base
 
+import android.content.Context
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.free.assignmentapplication.data.model.responseModels.BaseResponseModel
 
 abstract class BaseViewModel : ViewModel() {
 
@@ -14,13 +15,15 @@ abstract class BaseViewModel : ViewModel() {
     abstract fun start()
 
 
-    fun showErrorMessage(baseModel: BaseResponseModel) {
-        errorDialog.value = baseModel.message
-    }
-
-    fun showSuccessMessage(baseModel: BaseResponseModel) {
-
-        successDialog.value = baseModel.message
+    fun showAlertDialog(message: String, context: Context) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Alert")
+        builder.setMessage(message)
+        builder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
 
     }
 }

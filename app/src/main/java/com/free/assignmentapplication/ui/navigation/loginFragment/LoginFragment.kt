@@ -59,17 +59,27 @@ class LoginFragment : Fragment() {
                 event.getContentIfNotHandled()?.let { resource ->
                     when (resource) {
                         is LiveDataResource.Success -> {
+
+                            Log.d("teeeeeeeeeeeeet",resource.data!!.accessToken)
                             val direction =
                                 LoginFragmentDirections.actionLoginFragmentToHomeFragment()
                             findNavController().navigate(direction)
                         }
 
                         is LiveDataResource.ErrorResponse -> {
-                            Log.d("ErrorResponse", resource.message.toString())
+                            //Log.d("ErrorResponse", resource.message.toString())
+                            binding.progressBar.visibility = View.GONE
+                            binding.loginButton.isEnabled = true
                         }
 
                         is LiveDataResource.Exception -> {
                             Log.d("Exception", "Exception")
+                            loginViewModel.showAlertDialog(
+                                "password must contain only letters and numbers",
+                                requireContext()
+                            )
+                            binding.progressBar.visibility = View.GONE
+                            binding.loginButton.isEnabled = true
                         }
 
                         is LiveDataResource.Loading -> {
@@ -105,4 +115,9 @@ class LoginFragment : Fragment() {
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        binding.emailEditText.text.clear()
+        binding.passwordEditText.text.clear()
+    }
 }

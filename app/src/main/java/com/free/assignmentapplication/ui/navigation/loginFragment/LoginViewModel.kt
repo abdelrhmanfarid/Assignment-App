@@ -2,6 +2,7 @@ package com.free.assignmentapplication.ui.navigation.loginFragment
 
 import android.util.Log
 import com.free.assignmentapplication.base.BaseViewModel
+import com.free.assignmentapplication.data.local.LocalRepositoryImplementation
 import com.free.assignmentapplication.data.model.requestModels.loginRequestModel.LoginRequest
 import com.free.assignmentapplication.data.model.responseModels.loginResponseModel.LoginResponse
 import com.free.assignmentapplication.data.model.responseModels.signupResponseModel.SignupResponse
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val mainRepository: LocalRepositoryImplementation,
 ) : BaseViewModel() {
 
     private val _loginLiveData: MutableStateFlow<Event<LiveDataResource<LoginResponse>>> =
@@ -35,9 +37,10 @@ class LoginViewModel @Inject constructor(
         loginUseCase.execute({
             onComplete {
                 if (it.statusCode == 400) {
-                    showErrorMessage(it)
+
                     _loginLiveData.value = Event(LiveDataResource.ErrorResponse(it))
                 } else {
+                    mainRepository.saveString("token",it.accessToken)
                     _loginLiveData.value =Event (LiveDataResource.Success(it))
                 }
             }

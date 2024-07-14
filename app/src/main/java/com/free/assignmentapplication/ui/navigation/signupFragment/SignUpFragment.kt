@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.free.assignmentapplication.data.local.LocalRepositoryImplementation
 import com.free.assignmentapplication.data.model.requestModels.signupRequestModel.SignupRequest
 import com.free.assignmentapplication.databinding.FragmentSignUpBinding
 import com.free.assignmentapplication.ui.navigation.loginFragment.LoginFragmentDirections
@@ -17,6 +18,7 @@ import com.free.assignmentapplication.utils.LiveDataResource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SignUpFragment : Fragment() {
@@ -34,12 +36,18 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (signUpViewModel.getToken()!=""){
+            val direction =
+                SignUpFragmentDirections.actionSignUpFragmentToHomeFragment()
+            findNavController().navigate(direction)
+        }
 
         binding.signupButton.setOnClickListener {
 
-            if (getUserRegisterData()==null){
-                Toast.makeText(requireContext(),"please fill empty inputs",Toast.LENGTH_SHORT).show()
-            }else{
+            if (getUserRegisterData() == null) {
+                Toast.makeText(requireContext(), "please fill empty inputs", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
                 binding.progressBar.visibility = View.VISIBLE
                 signUpViewModel.registerUser(getUserRegisterData()!!)
             }
@@ -60,11 +68,22 @@ class SignUpFragment : Fragment() {
                         }
 
                         is LiveDataResource.ErrorResponse -> {
-                            Log.d("ErrorResponse", resource.message.toString())
+                            //Log.d("ErrorResponse", resource.message.toString())
+
+                            binding.progressBar.visibility = View.GONE
+                            binding.signupButton.isEnabled = true
                         }
 
                         is LiveDataResource.Exception -> {
                             Log.d("Exception", "Exception")
+
+                            //Toast.makeText(requireContext(),"message" ,Toast.LENGTH_LONG).show()
+                            signUpViewModel.showAlertDialog(
+                                "password must contain only letters and numbers",
+                                requireContext()
+                            )
+                            binding.progressBar.visibility = View.GONE
+                            binding.signupButton.isEnabled = true
                         }
 
                         is LiveDataResource.Loading -> {
@@ -90,14 +109,20 @@ class SignUpFragment : Fragment() {
         val name = binding.nameEditText.text.toString()
         val email = binding.emailEditText.text.toString()
         val password = binding.passwordEditText.text.toString()
-        return if (name.isNullOrEmpty()||email.isNullOrEmpty()||password.isNullOrEmpty()){
+        return if (name.isNullOrEmpty() || email.isNullOrEmpty() || password.isNullOrEmpty()) {
             null
-        }else{
+        } else {
             SignupRequest(name, email, password, "https://picsum.photos/800")
         }
 
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        binding.emailEditText.text.clear()
+        binding.passwordEditText.text.clear()
+        binding.nameEditText.text.clear()
+    }
 
 }

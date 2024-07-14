@@ -2,6 +2,7 @@ package com.free.assignmentapplication.ui.navigation.signupFragment
 
 import android.util.Log
 import com.free.assignmentapplication.base.BaseViewModel
+import com.free.assignmentapplication.data.local.LocalRepositoryImplementation
 import com.free.assignmentapplication.data.model.requestModels.signupRequestModel.SignupRequest
 import com.free.assignmentapplication.data.model.responseModels.signupResponseModel.SignupResponse
 import com.free.assignmentapplication.data.remote.MyRequestMap
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signupUseCase: SignupUseCase
+    private val signupUseCase: SignupUseCase,
+    private val mainRepository: LocalRepositoryImplementation
 ) : BaseViewModel() {
 
 
@@ -32,22 +34,22 @@ class SignUpViewModel @Inject constructor(
         signupUseCase.execute({
             onComplete {
 
-                if (it.statusCode==400){
-                    showErrorMessage(it)
+                if (it.statusCode == 400) {
+
                     _signupLiveData.value = Event(LiveDataResource.ErrorResponse(it))
-                }else{
+                } else {
 
 
                     _signupLiveData.value = Event(LiveDataResource.Success(it))
                 }
             }
             onCancel {
-                Log.d("signup task","canceled")
+                Log.d("signup task", "canceled")
             }
             onError {
                 _signupLiveData.value = Event(LiveDataResource.Exception())
             }
-        },params)
+        }, params)
 
     }
 
@@ -58,5 +60,12 @@ class SignUpViewModel @Inject constructor(
     override fun start() {
 
     }
+
+    fun getToken(): String {
+
+        return mainRepository.returnString("token")
+
+    }
+
 
 }

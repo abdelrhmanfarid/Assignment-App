@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.free.assignmentapplication.base.BaseViewModel
+import com.free.assignmentapplication.data.local.LocalRepositoryImplementation
 import com.free.assignmentapplication.data.local.room.AppDatabase
 import com.free.assignmentapplication.data.local.room.Product
 import com.free.assignmentapplication.data.model.responseModels.productsResponseModel.ProductResponse
@@ -19,7 +20,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getProductUseCase: GetProductUseCase,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val mainRepository: LocalRepositoryImplementation
+
 ) : BaseViewModel() {
 
     private val productDao = database.productDao()
@@ -85,4 +88,8 @@ class HomeViewModel @Inject constructor(
     override fun start() {
     }
 
+
+    fun emptyToken(){
+        mainRepository.saveString("token","")
+    }
 }
